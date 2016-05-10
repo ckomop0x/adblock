@@ -9,8 +9,7 @@ var PLATE_EXPIRES = 3600 * 24;
 var SETTINGS_DEV = {
   cookie: 'dev_c_adbl_sid',
   createUrl: 'http://noadblock.rambler.ru/createsid',
-  checkUrl: 'https://api.facebook.com/method/links.getStats?urls=ya.ru&format=json',
-  // checkUrl: 'http://noadblock.rambler.ru/checksid',
+  checkUrl: 'http://noadblock.rambler.ru/checksid',
   verifyUrl: 'http://noadblock.rambler.ru/verify?content=' + HOST_NAME,
 };
 
@@ -30,10 +29,6 @@ function init(isProd) {
   var result = {};
   result.plate = !getCookie(PLATE_COOKIE);
 
-  // ====================================
-  setCookie(settings.cookie, '322323323');
-  // ====================================
-
   return new Promise(function(resolve, reject) {
     var request = new XMLHttpRequest();
     if (!adblockCookie) {
@@ -51,8 +46,7 @@ function init(isProd) {
         return;
       }
       if (request.status === 404) {
-        // deleteCookie(settings.cookie, '.rambler.ru');
-        deleteCookie(settings.cookie);
+        deleteCookie(settings.cookie, '.rambler.ru');
       }
       result.ad = true;
       resolve(result);
