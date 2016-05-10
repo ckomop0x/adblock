@@ -23,8 +23,8 @@ var SETTINGS_PROD = {
 /**
  * return show or hide ad and plate
  */
-function init(isProd) {
-  var settings = (isProd === 'true') ? SETTINGS_PROD : SETTINGS_DEV;
+function init(debug) {
+  var settings = (debug === 'true') ? SETTINGS_DEV : SETTINGS_PROD;
   var adblockCookie = getCookie(settings.cookie);
   var result = {};
   result.plate = !getCookie(PLATE_COOKIE);
