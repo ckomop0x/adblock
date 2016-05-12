@@ -22,20 +22,18 @@ import * as adblock from 'rambler-adblock';
 
 const PLATE_TEXT = 'Воспользуйтесь опцией отключения рекламы. Если у&nbsp;вас она уже активирована, то нажмите сюда.';
 const PLATE_URL = 'http://noadblock.rambler.ru/verify?content=' + location.hostname;
-const DEBUG = document.body.getAttribute('data-prod');
+const DEBUG = document.body.getAttribute('data-prod'); // true||false
 
-export function init() {
-  adblock.init(DEBUG)
-    .then(start)
-    .catch(start);
+adblock.init(DEBUG)
+  .then(start)
+  .catch(start);
 
-  function start(isAdblock) {
-    if (isAdblock.ad) {
-      console.log('Показать рекламу');
-    }
-    if (isAdblock.plate) {
-      showPlate();
-    }
+function start(isAdblock) {
+  if (isAdblock.ad) {
+    console.log('Показать рекламу');
+  }
+  if (isAdblock.plate) {
+    showPlate();
   }
 }
 
