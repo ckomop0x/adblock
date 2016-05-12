@@ -1,10 +1,23 @@
 {
-  "name": "adblock",
-  "version": "1.0.0",
-  "description": "",
+  "name": "rambler-adblock",
+  "version": "0.0.2",
+  "description": "Rambler npm package for managing ads at holding sites",
+  "keywords": [
+    "rambler",
+    "adblock",
+    "ads"
+  ],
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "homepage": "https://github.com/arezakov/adblock",
+  "bugs": {
+    "url": "https://github.com/arezakov/adblock/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/arezakov/adblock.git"
   },
   "author": "Alexey Rezakov",
   "license": "ISC",

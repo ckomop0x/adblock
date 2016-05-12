@@ -1,25 +1,27 @@
-# adblock
+# rambler-adblock
+[![NPM version](https://img.shields.io/npm/v/rambler-adblock.svg)](https://www.npmjs.com/package/rambler-adblock)
+
+## Usage
 
 [Технические требования подключения контентных площадок к системе AdBlock.Rambler](https://confluence.rambler-co.ru/pages/viewpage.action?pageId=22874571)
 
 ## Node.js
 
-To install:
+### To install:
 
 ```sh
-npm i git+ssh://git@github.com:arezakov/adblock.git --save
+npm i rambler-adblock --save
 ```
 
-To use:
+### To use:
 
 ```js
 'use strict';
 
-import * as adblock from 'adblock';
+import * as adblock from 'rambler-adblock';
 
-const HOST_NAME = location.hostname;
 const PLATE_TEXT = 'Воспользуйтесь опцией отключения рекламы. Если у&nbsp;вас она уже активирована, то нажмите сюда.';
-const PLATE_URL = 'http://noadblock.rambler.ru/verify?content=' + HOST_NAME;
+const PLATE_URL = 'http://noadblock.rambler.ru/verify?content=' + location.hostname;
 const DEBUG = document.body.getAttribute('data-prod');
 
 export function init() {
@@ -29,7 +31,7 @@ export function init() {
 
   function start(isAdblock) {
     if (isAdblock.ad) {
-        console.log('Показать рекламу');
+      console.log('Показать рекламу');
     }
     if (isAdblock.plate) {
       showPlate();
