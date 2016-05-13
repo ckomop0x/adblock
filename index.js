@@ -4,7 +4,6 @@ var Promise = require('lie');
 
 var HOST_NAME = location.hostname;
 var PLATE_COOKIE = 'adblock_plate_closed';
-var PLATE_EXPIRES = 3600 * 24;
 
 var SETTINGS_DEV = {
   cookie: 'dev_c_adbl_sid',
@@ -62,9 +61,10 @@ function init(debug) {
 /**
  * set plate cookie
  */
-function delaySubscribe() {
+function delaySubscribe(_expires) {
+  var expires = _expires || 3600 * 24;
   setCookie(PLATE_COOKIE, '1', {
-    expires: PLATE_EXPIRES,
+    expires: expires,
     path: '/'
   });
 }
