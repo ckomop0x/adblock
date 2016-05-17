@@ -7,16 +7,16 @@ var PLATE_COOKIE = 'adblock_plate_closed';
 
 var SETTINGS_DEV = {
   cookie: 'dev_c_adbl_sid',
-  createUrl: 'http://noadblock.rambler.ru/createsid',
-  checkUrl: 'http://noadblock.rambler.ru/checksid',
-  verifyUrl: 'http://noadblock.rambler.ru/verify?content=' + HOST_NAME,
+  createUrl: 'https://noadblock.rambler.ru/createsid',
+  checkUrl: 'https://noadblock.rambler.ru/checksid',
+  verifyUrl: 'http:s//noadblock.rambler.ru/verify?content=' + HOST_NAME,
 };
 
 var SETTINGS_PROD = {
   cookie: 'c_adbl_sid',
-  createUrl: 'http://adblock.rambler.ru/createsid',
-  checkUrl: 'http://adblock.rambler.ru/checksid',
-  verifyUrl: 'http://adblock.rambler.ru/verify?content=' + HOST_NAME,
+  createUrl: 'https://adblock.rambler.ru/createsid',
+  checkUrl: 'https://adblock.rambler.ru/checksid',
+  verifyUrl: 'https://adblock.rambler.ru/verify?content=' + HOST_NAME,
 };
 
 /**

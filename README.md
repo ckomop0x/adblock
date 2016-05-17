@@ -20,9 +20,11 @@ npm i rambler-adblock --save
 
 import * as adblock from 'rambler-adblock';
 
-const PLATE_TEXT = 'Воспользуйтесь опцией отключения рекламы. Если у&nbsp;вас она уже активирована, то нажмите сюда.';
-const PLATE_URL = `http://noadblock.rambler.ru/verify?content=${location.hostname}`;
 const DEBUG = document.body.getAttribute('data-prod'); // true||false
+const PLATE_TEXT = 'Воспользуйтесь опцией отключения рекламы. Если у&nbsp;вас она уже активирована, то нажмите сюда.';
+const PLATE_URL = DEBUG ?
+  `https://noadblock.rambler.ru/verify?content=${location.hostname}` :
+  `https://adblock.rambler.ru/verify?content=${location.hostname}`;
 
 adblock.init(DEBUG)
   .then(start)
