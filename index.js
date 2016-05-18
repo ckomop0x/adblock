@@ -8,7 +8,7 @@ var ADBLOCK_COOKIE = 'c_adbl_sid';
 var SETTINGS_DEV = {
   createUrl: 'https://noadblock.rambler.ru/createsid',
   checkUrl: 'https://noadblock.rambler.ru/checksid',
-  verifyUrl: 'http:s//noadblock.rambler.ru/verify?content=' + HOST_NAME,
+  verifyUrl: 'https://noadblock.rambler.ru/verify?content=' + HOST_NAME,
 };
 var SETTINGS_PROD = {
   createUrl: 'https://adblock.rambler.ru/createsid',
@@ -72,7 +72,7 @@ function setLocalSID(SID) {
       SID,
       {
         path: '/',
-        domain: 'finance.local',
+        domain: '.rambler.ru',
         expires: 3600 * 24 * 365
       }
     );
