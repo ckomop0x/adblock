@@ -6,11 +6,13 @@ var HOST_NAME = location.hostname;
 var PLATE_COOKIE = 'adblock_plate_closed';
 var ADBLOCK_COOKIE = 'c_adbl_sid';
 var SETTINGS_DEV = {
+  cookie: 'dev_c_adbl_sid',
   createUrl: 'https://noadblock.rambler.ru/createsid',
   checkUrl: 'https://noadblock.rambler.ru/checksid',
   verifyUrl: 'https://noadblock.rambler.ru/verify?content=' + HOST_NAME,
 };
 var SETTINGS_PROD = {
+  cookie: 'c_adbl_sid',
   createUrl: 'https://adblock.rambler.ru/createsid',
   checkUrl: 'https://adblock.rambler.ru/checksid',
   verifyUrl: 'https://adblock.rambler.ru/verify?content=' + HOST_NAME,
@@ -65,10 +67,10 @@ function isRamblerDomain() {
   return HOST_NAME.split('.').reverse()[1] === 'rambler';
 }
 
-function setLocalSID(SID) {
+function setLocalSID(SID, cookieName) {
   if (isRamblerDomain()) {
     setCookie(
-      ADBLOCK_COOKIE,
+      cookieName,
       SID,
       {
         path: '/',
@@ -81,13 +83,13 @@ function setLocalSID(SID) {
   }
 }
 
-function getLocalSID() {
-  return localStorage.getItem(ADBLOCK_COOKIE) || getCookie(ADBLOCK_COOKIE);
+function getLocalSID(cookieName) {
+  return localStorage.getItem(cookieName) || getCookie(cookieName);
 }
 
-function removeLocalSID() {
-  deleteCookie(ADBLOCK_COOKIE, '.rambler.ru');
-  localStorage.removeItem(ADBLOCK_COOKIE);
+function removeLocalSID(cookieName) {
+  deleteCookie(cookieName, '.rambler.ru');
+  localStorage.removeItem(cookieName);
 }
 
 /**
@@ -103,16 +105,17 @@ function init(_debug) {
   // Настройки берем из window, если их нет, то берем локальные, в зависимости от окружения
   if (window.ramblerAdblockParams) {
     settings = window.ramblerAdblockParams;
+    settings.cookie = settings.cookie || SETTINGS_PROD.cookie;
   } else {
     settings = debug ? SETTINGS_DEV : SETTINGS_PROD;
   }
   // Если есть get параметр adblock_sid, то записываем его в куки или локасторадж
   if (getUrlParam('adblock_sid')) {
-    setLocalSID(getUrlParam('adblock_sid'));
+    setLocalSID(getUrlParam('adblock_sid'), settings.cookie);
   }
 
   return new Promise(function(resolve, reject) {
-    var SID = getLocalSID();
+    var SID = getLocalSID(settings.cookie);
     var request = new XMLHttpRequest();
     if (!SID) {
       resolve(result);
@@ -127,7 +130,7 @@ function init(_debug) {
         return;
       }
       if (request.status === 404) {
-        removeLocalSID(settings);
+        removeLocalSID(settings.cookie);
       }
       resolve(result);
     };
