@@ -1,6 +1,6 @@
 {
   "name": "rambler-adblock",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "Rambler npm package for managing ads at holding sites",
   "keywords": [
     "rambler",
