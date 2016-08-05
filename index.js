@@ -17,8 +17,6 @@ var prodUrl = 'adblock.rambler.ru';
 var SETTINGS_DEV = new Settings(devCookie,devProt,devUrl,HOST_NAME);
 var SETTINGS_PROD = new Settings(prodCookie,prodProt,prodUrl,HOST_NAME);
 
-
-console.log(SETTINGS_DEV, SETTINGS_PROD);
 /**
  * return show or hide ad and plate
  */

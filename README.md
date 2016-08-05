@@ -21,13 +21,15 @@ npm i rambler-adblock --save
 import * as adblock from 'rambler-adblock';
 
 const DEBUG = document.body.getAttribute('data-prod'); // true||false
-// custom domains settings
+
+// Настройки для тестового и продуктового серверов(адрес и протокол) 
 var customSettings = {
   prodUrl: 'vk.com',
   prodProt: 'https',
   devUrl: 'ya.ru',
   devProt: 'http'
 };
+
 const PLATE_TEXT = 'Воспользуйтесь опцией отключения рекламы. Если у&nbsp;вас она уже активирована, то нажмите сюда.';
 const PLATE_URL = DEBUG ?
   customSettings.devProt + '://' + customSettings.devUrl + '/verify?content=' + location.hostname :
