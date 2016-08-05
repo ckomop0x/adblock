@@ -4,19 +4,126 @@ var Promise = require('lie');
 
 var HOST_NAME = location.hostname;
 var PLATE_COOKIE = 'adblock_plate_closed';
-var ADBLOCK_COOKIE = 'c_adbl_sid';
-var SETTINGS_DEV = {
-  cookie: 'dev_c_adbl_sid',
-  createUrl: 'https://noadblock.rambler.ru/createsid',
-  checkUrl: 'https://noadblock.rambler.ru/checksid',
-  verifyUrl: 'https://noadblock.rambler.ru/verify?content=' + HOST_NAME,
-};
-var SETTINGS_PROD = {
-  cookie: 'c_adbl_sid',
-  createUrl: 'https://adblock.rambler.ru/createsid',
-  checkUrl: 'https://adblock.rambler.ru/checksid',
-  verifyUrl: 'https://adblock.rambler.ru/verify?content=' + HOST_NAME,
-};
+
+// default settings
+var devCookie = 'dev_c_adbl_sid';
+var devProt = 'https';
+var devUrl = 'noadblock.rambler.ru';
+
+var prodCookie = 'c_adbl_sid';
+var prodProt = 'https';
+var prodUrl = 'adblock.rambler.ru';
+
+var SETTINGS_DEV = new Settings(devCookie,devProt,devUrl,HOST_NAME);
+var SETTINGS_PROD = new Settings(prodCookie,prodProt,prodUrl,HOST_NAME);
+
+
+console.log(SETTINGS_DEV, SETTINGS_PROD);
+/**
+ * return show or hide ad and plate
+ */
+function init(debug, customSettings) {
+  if(customSettings) {
+    changeSettings(customSettings);
+  }
+
+  var settings = debug ? SETTINGS_DEV : SETTINGS_PROD;
+  var adblockCookie = getCookie(settings.cookie);
+  var result = {};
+  result.plate = !getCookie(PLATE_COOKIE);
+
+  return new Promise(function(resolve, reject) {
+    var request = new XMLHttpRequest();
+    if (!adblockCookie) {
+      result.ad = true;
+      resolve(result);
+      return;
+    }
+    request.open('GET', settings.checkUrl + '?SID=' + adblockCookie, true);
+    request.onload = function() {
+      console.log(request.status);
+      if (request.status === 200) {
+        result.ad = false;
+        result.plate = false;
+        resolve(result);
+        return;
+      }
+      if (request.status === 404) {
+        deleteCookie(settings.cookie, '.rambler.ru');
+      }
+      result.ad = true;
+      resolve(result);
+    };
+    request.onerror = function() {
+      result.ad = true;
+      reject(result);
+    };
+    request.send();
+  });
+}
+
+
+/**
+ *  Settings constructor
+ */
+
+function Settings(cookie,protocol,url,host) {
+  if(protocol === 'http' || protocol === 'https') {
+    this.protocol = protocol + '://';
+  } else {
+    this.protocol = 'http://';
+    console.log('Defaul protocol used(http)');
+  }
+
+  // main methods
+  this.createHash = '/createsid';
+  this.checkHash = '/checksid';
+  this.verifyHash = '/verify?content=';
+  this.url = url;
+  this.host = host;
+  this.cookie = cookie;
+  this.createUrl = this.protocol + this.url + this.createHash;
+  this.checkUrl = this.protocol + this.url + this.checkHash;
+  this.verifyUrl = this.protocol + this.url + this.verifyHash + host;
+}
+
+
+/**
+ *  Change settings to custom
+ */
+function changeSettings(customSettings) {
+  if(customSettings.devProt && customSettings.devUrl) {
+    SETTINGS_DEV = new Settings(
+      devCookie,
+      customSettings.devProt,
+      customSettings.devUrl,
+      HOST_NAME);
+    console.log('Custom development settings used');
+  } else {
+    console.log('Default development settings');
+  }
+  if(customSettings.prodUrl && customSettings.prodProt) {
+    SETTINGS_PROD = new Settings(
+      prodCookie,
+      customSettings.prodProt,
+      customSettings.prodUrl,
+      HOST_NAME);
+    console.log('Custom production settings used');
+  } else {
+    console.log('Default production settings');
+  }
+}
+
+/**
+ * set plate cookie
+ */
+function delaySubscribe(_expires) {
+  var expires = _expires || 3600 * 24;
+  setCookie(PLATE_COOKIE, '1', {
+    expires: expires,
+    path: '/'
+  });
+}
 
 function getCookie(name) {
   var matches = document.cookie.match(new RegExp(
@@ -51,108 +158,14 @@ function setCookie(name, value, options) {
 
 function deleteCookie(_name, _domain) {
   var domain = _domain || '';
+
   setCookie(_name, '', {
     domain: domain,
     expires: -1
   });
 }
 
-function getUrlParam(name) {
-  var search = window.location.search;
-  search = search.match(new RegExp(name + '=([^&=]+)'));
-  return search ? search[1] : '';
-}
-
-function isRamblerDomain() {
-  return HOST_NAME.split('.').reverse()[1] === 'rambler';
-}
-
-function setLocalSID(SID, cookieName) {
-  if (isRamblerDomain()) {
-    setCookie(
-      cookieName,
-      SID,
-      {
-        path: '/',
-        domain: '.rambler.ru',
-        expires: 3600 * 24 * 365
-      }
-    );
-  } else {
-    localStorage.setItem(ADBLOCK_COOKIE, SID);
-  }
-}
-
-function getLocalSID(cookieName) {
-  return localStorage.getItem(cookieName) || getCookie(cookieName);
-}
-
-function removeLocalSID(cookieName) {
-  deleteCookie(cookieName, '.rambler.ru');
-  localStorage.removeItem(cookieName);
-}
-
-/**
- * return show or hide ad and plate
- */
-function init(_debug) {
-  var settings;
-  var debug = _debug || false;
-  var result = {};
-  result.plate = !getCookie(PLATE_COOKIE);
-  result.ad = true;
-
-  // Настройки берем из window, если их нет, то берем локальные, в зависимости от окружения
-  if (window.ramblerAdblockParams) {
-    settings = window.ramblerAdblockParams;
-    settings.cookie = settings.cookie || SETTINGS_PROD.cookie;
-  } else {
-    settings = debug ? SETTINGS_DEV : SETTINGS_PROD;
-  }
-  // Если есть get параметр adblock_sid, то записываем его в куки или локасторадж
-  if (getUrlParam('adblock_sid')) {
-    setLocalSID(getUrlParam('adblock_sid'), settings.cookie);
-  }
-
-  return new Promise(function(resolve, reject) {
-    var SID = getLocalSID(settings.cookie);
-    var request = new XMLHttpRequest();
-    if (!SID) {
-      resolve(result);
-      return;
-    }
-    request.open('GET', settings.checkUrl + '?SID=' + SID, true);
-    request.onload = function() {
-      if (request.status === 200) {
-        result.ad = false;
-        result.plate = false;
-        resolve(result);
-        return;
-      }
-      if (request.status === 404) {
-        removeLocalSID(settings.cookie);
-      }
-      resolve(result);
-    };
-    request.onerror = function() {
-      reject(result);
-    };
-    request.send();
-  });
-}
-
-/**
- * set plate cookie
- */
-function delaySubscribe(_expires) {
-  var expires = _expires || 3600 * 24;
-  setCookie(PLATE_COOKIE, '1', {
-    expires: expires,
-    path: '/'
-  });
-}
-
 module.exports = {
   init: init,
   delaySubscribe: delaySubscribe
-};
+}
