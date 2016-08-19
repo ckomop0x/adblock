@@ -22,12 +22,10 @@ import * as adblock from 'rambler-adblock';
 
 const DEBUG = document.body.getAttribute('data-prod'); // true||false
 
-// Настройки для тестового и продуктового серверов(адрес и протокол) 
+// Настройки для тестового и продуктового серверов(адрес) 
 var customSettings = {
   prodUrl: 'vk.com',
-  prodProt: 'https',
-  devUrl: 'ya.ru',
-  devProt: 'http'
+  devUrl: 'ya.ru'
 };
 
 const PLATE_TEXT = 'Воспользуйтесь опцией отключения рекламы. Если у&nbsp;вас она уже активирована, то нажмите сюда.';

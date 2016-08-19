@@ -6,16 +6,18 @@ var HOST_NAME = location.hostname;
 var PLATE_COOKIE = 'adblock_plate_closed';
 
 // default settings
+var PROTOCOL = window.location.protocol + '//';
+
+// dev settings
 var devCookie = 'dev_c_adbl_sid';
-var devProt = 'https';
 var devUrl = 'noadblock.rambler.ru';
 
+// prod settings
 var prodCookie = 'c_adbl_sid';
-var prodProt = 'https';
 var prodUrl = 'adblock.rambler.ru';
 
-var SETTINGS_DEV = new Settings(devCookie,devProt,devUrl,HOST_NAME);
-var SETTINGS_PROD = new Settings(prodCookie,prodProt,prodUrl,HOST_NAME);
+var SETTINGS_DEV = new Settings(devCookie,devUrl,HOST_NAME);
+var SETTINGS_PROD = new Settings(prodCookie,prodUrl,HOST_NAME);
 
 /**
  * return show or hide ad and plate
@@ -65,15 +67,9 @@ function init(debug, customSettings) {
  *  Settings constructor
  */
 
-function Settings(cookie,protocol,url,host) {
-  if(protocol === 'http' || protocol === 'https') {
-    this.protocol = protocol + '://';
-  } else {
-    this.protocol = 'http://';
-    console.log('Defaul protocol used(http)');
-  }
-
+function Settings(cookie,url,host) {
   // main methods
+  this.protocol = PROTOCOL;
   this.createHash = '/createsid';
   this.checkHash = '/checksid';
   this.verifyHash = '/verify?content=';
@@ -90,20 +86,18 @@ function Settings(cookie,protocol,url,host) {
  *  Change settings to custom
  */
 function changeSettings(customSettings) {
-  if(customSettings.devProt && customSettings.devUrl) {
+  if(customSettings.devUrl) {
     SETTINGS_DEV = new Settings(
       devCookie,
-      customSettings.devProt,
       customSettings.devUrl,
       HOST_NAME);
     console.log('Custom development settings used');
   } else {
     console.log('Default development settings');
   }
-  if(customSettings.prodUrl && customSettings.prodProt) {
+  if(customSettings.prodUrl) {
     SETTINGS_PROD = new Settings(
       prodCookie,
-      customSettings.prodProt,
       customSettings.prodUrl,
       HOST_NAME);
     console.log('Custom production settings used');
