@@ -4,6 +4,7 @@ var Promise = require('lie');
 
 var HOST_NAME = location.hostname;
 var PLATE_COOKIE = 'adblock_plate_closed';
+var cookieUrl = '.rambler-co.ru';
 
 // default settings
 var PROTOCOL = window.location.protocol + '//';
@@ -16,8 +17,8 @@ var devUrl = 'noadblock.rambler.ru';
 var prodCookie = 'c_adbl_sid';
 var prodUrl = 'adblock.rambler.ru';
 
-var SETTINGS_DEV = new Settings(devCookie,devUrl,HOST_NAME);
-var SETTINGS_PROD = new Settings(prodCookie,prodUrl,HOST_NAME);
+var SETTINGS_DEV = new Settings(devCookie,devUrl,HOST_NAME,cookieUrl);
+var SETTINGS_PROD = new Settings(prodCookie,prodUrl,HOST_NAME,cookieUrl);
 
 /**
  * return show or hide ad and plate
@@ -26,6 +27,9 @@ function init(debug, customSettings) {
   if(customSettings) {
     changeSettings(customSettings);
   }
+
+  this.devSettings = SETTINGS_DEV;
+  this.prodSettings = SETTINGS_PROD;
 
   var settings = debug ? SETTINGS_DEV : SETTINGS_PROD;
   var adblockCookie = getCookie(settings.cookie);
@@ -49,7 +53,7 @@ function init(debug, customSettings) {
         return;
       }
       if (request.status === 404) {
-        deleteCookie(settings.cookie, '.rambler.ru');
+        deleteCookie(settings.cookie, settings.cookieUrl);
       }
       result.ad = true;
       resolve(result);
@@ -67,7 +71,7 @@ function init(debug, customSettings) {
  *  Settings constructor
  */
 
-function Settings(cookie,url,host) {
+function Settings(cookie,url,host,customCookieUrl) {
   // main methods
   this.protocol = PROTOCOL;
   this.createHash = '/createsid';
@@ -76,6 +80,7 @@ function Settings(cookie,url,host) {
   this.url = url;
   this.host = host;
   this.cookie = cookie;
+  this.cookieUrl = customCookieUrl;
   this.createUrl = this.protocol + this.url + this.createHash;
   this.checkUrl = this.protocol + this.url + this.checkHash;
   this.verifyUrl = this.protocol + this.url + this.verifyHash + host;
@@ -90,7 +95,9 @@ function changeSettings(customSettings) {
     SETTINGS_DEV = new Settings(
       devCookie,
       customSettings.devUrl,
-      HOST_NAME);
+      HOST_NAME,
+      customSettings.cookieUrl
+    );
     console.log('Custom development settings used');
   } else {
     console.log('Default development settings');
@@ -99,7 +106,9 @@ function changeSettings(customSettings) {
     SETTINGS_PROD = new Settings(
       prodCookie,
       customSettings.prodUrl,
-      HOST_NAME);
+      HOST_NAME,
+      customSettings.cookieUrl
+    );
     console.log('Custom production settings used');
   } else {
     console.log('Default production settings');

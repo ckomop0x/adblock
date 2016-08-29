@@ -22,20 +22,23 @@ import * as adblock from 'rambler-adblock';
 
 const DEBUG = document.body.getAttribute('data-prod'); // true||false
 
-// Настройки для тестового и продуктового серверов(адрес) 
+// Settings for production & development
 var customSettings = {
-  prodUrl: 'vk.com',
-  devUrl: 'ya.ru'
+  prodUrl: 'rambler-co.ru',
+  devUrl: 'dev.rambler-co.ru',
+  cookieUrl: '.rambler-co.ru'
 };
 
-const PLATE_TEXT = 'Воспользуйтесь опцией отключения рекламы. Если у&nbsp;вас она уже активирована, то нажмите сюда.';
-const PLATE_URL = DEBUG ?
-  customSettings.devProt + '://' + customSettings.devUrl + '/verify?content=' + location.hostname :
-  customSettings.prodProt + '://' + customSettings.prodUrl + '/verify?content=' + location.hostname;
-
+// Plugin init
 adblock.init(DEBUG, customSettings)
   .then(start)
   .catch(start);
+
+// Adblock text and verify links
+const PLATE_TEXT = 'Воспользуйтесь опцией отключения рекламы. Если у вас она уже активирована, то нажмите сюда.';
+const PLATE_URL = DEBUG ?
+  adblock.devSettings.verifyUrl :
+  adblock.prodSettings.verifyUrl;
 
 function start(isAdblock) {
   if (isAdblock.ad) {
