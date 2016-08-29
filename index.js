@@ -28,12 +28,13 @@ function init(debug, customSettings) {
     changeSettings(customSettings);
   }
 
-  this.devSettings = SETTINGS_DEV;
-  this.prodSettings = SETTINGS_PROD;
+  // this.devSettings = SETTINGS_DEV;
+  // this.prodSettings = SETTINGS_PROD;
 
   var settings = debug ? SETTINGS_DEV : SETTINGS_PROD;
   var adblockCookie = getCookie(settings.cookie);
   var result = {};
+  result.settings = settings;
   result.plate = !getCookie(PLATE_COOKIE);
 
   return new Promise(function(resolve, reject) {
